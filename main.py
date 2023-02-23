@@ -1,3 +1,3 @@
 def name(params):
-	print 2
+	print()
 	

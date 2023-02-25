@@ -38,10 +38,9 @@ def agrok():
                                    'Цена': [i[0] for i in prices_sales],
                                    'Скидка': [i[1] for i in prices_sales]})
     sort_df(agrokomplex_df, catalog)
-
-
-
-
-
 if __name__ == '__main__':
     agrok()
+
+
+
+

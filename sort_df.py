@@ -4,4 +4,3 @@ def sort_df(name_df, catalog=''):
     name_df = name_df.sort_values(by='Скидка', ascending=False)
     name_df = name_df.drop_duplicates(keep='first')
 
-    name_df.to_excel('name.xlsx')

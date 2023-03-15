@@ -13,7 +13,7 @@ def get_bs4(url):
     ua = UserAgent().random
     headers = {'User-Agent': ua}
 
-    page_get = requests.get(url, headers=headers, cookies={'mg_geo_id': '1795'})
+    page_get = requests.get(url, headers=headers, cookies={'mg_geo_id': '1795'}, timeout=5)
 
     page = BeautifulSoup(page_get.text, 'html.parser')
     return page
@@ -24,17 +24,20 @@ def magnit():
     links = []
     prices = []
     sales = []
+    notes = []
     names_kosm = []
     links_kosm = []
     prices_kosm = []
     sales_kosm = []
+    notes_kosm = []
 
     url = 'https://magnit.ru/promo'
     # ДОБАВИТЬ SESSION
 
 
-
     main_page_text = get_bs4(url)  # получаю bs4 основного сайта
+
+
     url = choice_category(main_page_text)
     page_number = 1
     data = {
@@ -44,8 +47,8 @@ def magnit():
     }
     ua = UserAgent().random
     headers = {'User-Agent': ua}
-
-    response = requests.post(url, cookies={'mg_geo_id': '1795'},
+    response = requests.session()
+    response = response.post(url, cookies={'mg_geo_id': '1795'},
                              headers=headers, data=data)    # получаю bs4 сайта с выбранной категорией 1 страницы
     page = BeautifulSoup(response.text, "html.parser")
 
@@ -59,12 +62,14 @@ def magnit():
                 availability(good, names, tag_name=('div', {'class': 'card-sale__title'}))
                 links.append(f'https://magnit.ru{good.get("href")}')
                 availability(good, prices, tag_name=('div', {'class': 'label__price label__price_new'}))
+                availability(good, notes, tag_name=('div', {'class': 'card-sale__header'}))
             else:
                 availability(good, sales_kosm,
                              tag_name=('div', {'class': 'label label_sm label_cosmetic card-sale__discount'}))
                 availability(good, names_kosm, tag_name=('div', {'class': 'card-sale__title'}))
                 links_kosm.append(f'https://magnit.ru{good.get("href")}')
                 availability(good, prices_kosm, tag_name=('div', {'class': 'label__price label__price_new'}))
+                availability(good, notes_kosm, tag_name=('div', {'class': 'card-sale__header'}))
         page_number += 1
         data = {
             'page': f'{page_number}',
@@ -85,11 +90,13 @@ def magnit():
     magnit_df = pd.DataFrame({'Наименование': names,
                               'Ссылка': links,
                               'Цена': prices,
-                              'Скидка': sales})
+                              'Скидка': sales,
+                              'Примечание': notes})
     magnit_kosm_df = pd.DataFrame({'Наименование': names_kosm,
                                    'Ссылка': links_kosm,
                                    'Цена': prices_kosm,
-                                   'Скидка': sales_kosm})
+                                   'Скидка': sales_kosm,
+                                   'Примечание': notes_kosm})
 
     magnit_df = magnit_df[~magnit_df['Наименование'].isin(magnit_kosm_df['Наименование'])].reset_index(
         drop=True)  # удалаяю из магнита, то что есть в косметик

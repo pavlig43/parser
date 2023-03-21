@@ -1,6 +1,7 @@
-import tkinter as tk
+from tkinter import*
 import json
-
+from class_CheckBox import CheckboxTreeview
+from category import get_all_category
 
 def tk_category():
     old_men = {'олег': '35', 'паша': '30', 'вася': '25', 'коля': '20', 'жора': '15', 'макс': '10'}
@@ -33,7 +34,37 @@ def tk_category():
         tk.Checkbutton(root, text=key, variable=var_dict[key]).grid(row=i, column=0)
     tk.Button(root, text='SAVE', command=saved).grid(row=len(old_men))
     root.mainloop()
+def see_category(dict_shop):
+    root = Tk()
+    root.title('1313')# имя магазина
+    tree = CheckboxTreeview(root)
+    tree.configure()
+    men ={}
 
+
+    for category in dict_shop:
+        category_row = tree.insert("", 1, text=category)# основные категории
+        for sub_name in dict_shop[category]:
+            id2 = tree.insert(category_row, "end", text=sub_name)
+            if sub_name in men:# проверка на наличие вмоем выборе
+                tree.item_check(id2)
+            else:
+                tree.item_uncheck(id2)
+
+    def entered(event):
+        my_lst = tree.get_checked()
+        my_lst = [tree.item(i)['text'] for i in my_lst]
+        print(my_lst)
+
+    btn = Button(text="Entered")
+
+    btn.bind("<ButtonPress>", entered)
+
+    tree.pack()
+    btn.pack()
+    root.mainloop()
 
 if __name__ == '__main__':
-    tk_category()
+    a = get_all_category()
+
+    see_category(a)

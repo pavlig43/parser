@@ -12,7 +12,7 @@ def get_all_category():
         subcutegories_names = [i.text.strip() for i in category.find_all('label', class_='radio-wrap')]
         # ищу номер категорий в этих именах сабкатегорий
         subcutegories_values = [i.find('input').get('value') for i in category.find_all('label', class_='radio-wrap')]
-        category_dict[name_of_category] = {value: sub for sub, value in zip(subcutegories_names, subcutegories_values)}
+        category_dict[name_of_category] = {value: sub_name for value, sub_name in zip(subcutegories_names, subcutegories_values)}
     return category_dict
 
 if __name__ == '__main__':

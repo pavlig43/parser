@@ -5,7 +5,7 @@ import json
 from tkinter import ttk
 import os
 
-from class_CheckBox import CheckboxTreeview
+from classes import CheckboxTreeview, MyJson
 from availability import *
 
 
@@ -13,8 +13,11 @@ from availability import *
 
 
 def get_json_category(bolder_shop):
+    my_choice = MyJson(bolder_shop)  # получаю словарь с моим выбором из jsona
+    my_choice_old = my_choice.read_my_choice()
+
     module = importlib.import_module(f'{bolder_shop}.category')  # из названия папки магазина импортирую модуль
-    dict_shop = module.get_all_category() # получаю словарь со ВСЕМИ категориями , полученные с сайта
+    dict_shop = module.get_all_category()  # получаю словарь со ВСЕМИ категориями , полученные с сайта
     root = Tk()
     root.geometry('600x900')
     root.title('1313')  # имя магазина
@@ -22,15 +25,14 @@ def get_json_category(bolder_shop):
     vert_scroll = ttk.Scrollbar(root, orient='vertical', command=tree.yview)  # ползунок вертикальный
     vert_scroll.pack(side='right', fill='y')
     tree.configure(height=40, yscrollcommand=vert_scroll.set)
-    my_choice = my_choice_json(bolder_shop) # получаю словарь с моим выбором из jsona
 
     for category in dict_shop:
 
         category_row = tree.insert("", 1, text=category)  # основные категории
         for sub_name, value in dict_shop[category].items():
             id2 = tree.insert(category_row, "end", text=sub_name, values=value)
-            if category in my_choice.keys():
-                if sub_name in my_choice[category]:  # проверка категорий с сайта на наличие в моем выборе
+            if category in my_choice_old.keys():
+                if sub_name in my_choice_old[category]:  # проверка категорий с сайта на наличие в моем выборе
                     tree.item_check(id2)  # ставлю галочки
                 else:
                     tree.item_uncheck(id2)
@@ -38,7 +40,7 @@ def get_json_category(bolder_shop):
     def get_my_choice(event):
         # функция при нажатии кнопки получить остатки
         # собирает все галочки и делает словарь и обновляет json с моим выбором
-        my_choice = {}
+        my_choice_new = {}
         categories = tree.get_children()  # список всех категорий в виджете
         for category in categories:
             subcategories = {}
@@ -49,11 +51,12 @@ def get_json_category(bolder_shop):
                         'values']  # значение, которое к нему идет в словарь , используется для парсинга
                     subcategories[name] = str(value[0])
 
-                    my_choice[
+                    my_choice_new[
                         tree.item(category)['text']] = subcategories  # основной словарь дополняю словарем подкатегории
-        my_choice_str = json.dumps(my_choice, ensure_ascii=False)  # с русским текстом
-        with open(rf'C:\Users\user\PycharmProjects\parser\{bolder_shop}\my_choice.json', 'w') as file:
-            file.write(my_choice_str)
+        # my_choice_str = json.dumps(my_choice, ensure_ascii=False)  # с русским текстом
+        # with open(rf'C:\Users\user\PycharmProjects\parser\{bolder_shop}\my_choice.json', 'w') as file:
+        #     file.write(my_choice_str)
+        my_choice.write_my_choice(my_choice_new)
 
     btn = Button(text="Получить мой список")
 

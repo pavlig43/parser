@@ -3,7 +3,7 @@ import re
 from bs4 import BeautifulSoup
 
 
-def choice_category(page):
+def get_all_category(page):
     lst_category = page.find_all(class_='checkbox')
     dict_category = {
         '0': ('мой выбор', 'https://magnit.ru/promo/?category[]=fruits_vegetables&category[]=moloko&category[]=myaso')}

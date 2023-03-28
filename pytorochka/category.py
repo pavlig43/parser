@@ -23,11 +23,6 @@ def get_all_category():
         category_dict[name_of_category] = {value: sub_name for value, sub_name in zip(subcutegories_names, subcutegories_values)}
     return category_dict
 
-def my_choice_json():
-    file_path = os.path.join(os.path.dirname(__file__), 'my_choice.json')
-    with open(file_path, 'r') as file:
-         my_choice = file.read()
-    return json.loads(my_choice)
 
 if __name__ == '__main__':
     html = open('change.html', 'r', encoding='utf-8')

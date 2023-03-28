@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
 
 from availability import availability
-from choice_category import choice_category
+from category import get_all_category
 
 
 def get_bs4(url):
@@ -38,7 +38,7 @@ def magnit():
     main_page_text = get_bs4(url)  # получаю bs4 основного сайта
 
 
-    url = choice_category(main_page_text)
+    url = get_all_category(main_page_text)
     page_number = 1
     data = {
         'page': f'{page_number}',

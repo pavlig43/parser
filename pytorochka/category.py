@@ -1,8 +1,16 @@
+import json
+
 from bs4 import BeautifulSoup
+import os
 
 def get_all_category():
-    html = open('change.html', 'r', encoding='utf-8')
-    page_text = BeautifulSoup(html, 'html.parser')
+    # добавить реальный сайт
+    file_path = os.path.join(os.path.dirname(__file__), 'change.html')
+    with open(file_path, 'r',encoding='utf-8') as html:
+        page_text = BeautifulSoup(html, 'html.parser')
+
+    # html = open('change.html', 'r', encoding='utf-8')
+    # page_text = BeautifulSoup(html, 'html.parser')
     category_dict = {}
 
     category_name = page_text.find_all('li', class_='categories-item')
@@ -15,10 +23,14 @@ def get_all_category():
         category_dict[name_of_category] = {value: sub_name for value, sub_name in zip(subcutegories_names, subcutegories_values)}
     return category_dict
 
+def my_choice_json():
+    file_path = os.path.join(os.path.dirname(__file__), 'my_choice.json')
+    with open(file_path, 'r') as file:
+         my_choice = file.read()
+    return json.loads(my_choice)
+
 if __name__ == '__main__':
+    html = open('change.html', 'r', encoding='utf-8')
     print(get_all_category())
-    # nd = {}
-    # for i in category_dict.values():
-    #     nd |=i
-    # print(nd)
+
 

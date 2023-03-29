@@ -18,9 +18,10 @@ class CheckboxTreeview(Tree):
     
 class MyJson:
     filepath = ''
-    def __init__(self, bolder_shop):
+    def __init__(self, bolder_shop, name):
+        self.name = name
         self.bolder_shop = bolder_shop
-        MyJson.filepath = rf'C:\Users\user\PycharmProjects\parser\{self.bolder_shop}\my_choice.json'
+        MyJson.filepath = rf'C:\Users\user\PycharmProjects\parser\shops\{self.bolder_shop}\{self.name}.json'
     def read_my_choice(self):
         if not os.path.exists(MyJson.filepath):
             open(MyJson.filepath,'w').close()# создаю файл, если нет

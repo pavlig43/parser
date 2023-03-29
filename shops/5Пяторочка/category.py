@@ -3,17 +3,22 @@ import json
 from bs4 import BeautifulSoup
 import os
 
+from availability import get_bs4
+
+
 def get_all_category():
+    url = 'https://5ka.ru/special_offers'
+    page = get_bs4(url)
     # добавить реальный сайт
-    file_path = os.path.join(os.path.dirname(__file__), 'change.html')
-    with open(file_path, 'r',encoding='utf-8') as html:
-        page_text = BeautifulSoup(html, 'html.parser')
+    # file_path = os.path.join(os.path.dirname(__file__), 'change.html')
+    # with open(file_path, 'r',encoding='utf-8') as html:
+    #     page_text = BeautifulSoup(html, 'html.parser')
 
     # html = open('change.html', 'r', encoding='utf-8')
     # page_text = BeautifulSoup(html, 'html.parser')
     category_dict = {}
 
-    category_name = page_text.find_all('li', class_='categories-item')
+    category_name = page.find_all('li', class_='categories-item')
     for category in category_name:
         name_of_category = category.find('h4').text.strip()
         # ищу имена сабкатегорийй в основных

@@ -5,7 +5,7 @@ import requests
 from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
 
-from availability import availability
+from availability import availability, get_bs4
 
 
 def pyaterka():
@@ -26,6 +26,26 @@ def pyaterka():
     # number_category = [number_category.find('label', class_='radio-wrap').get('value') for number_category in all_categories_soup]
     # all_categories_dict = {category.find('label', class_ = 'radio-wrap').get('value'): category.text for category in all_categories_soup}
 
+def get_all_category():
+    url = 'https://5ka.ru/special_offers'
+    page = get_bs4(url)
+    # добавить реальный сайт
+    # file_path = os.path.join(os.path.dirname(__file__), 'change.html')
+    # with open(file_path, 'r',encoding='utf-8') as html:
+    #     page_text = BeautifulSoup(html, 'html.parser')
 
+    # html = open('change.html', 'r', encoding='utf-8')
+    # page_text = BeautifulSoup(html, 'html.parser')
+    category_dict = {}
+
+    category_name = page.find_all('li', class_='categories-item')
+    for category in category_name:
+        name_of_category = category.find('h4').text.strip()
+        # ищу имена сабкатегорийй в основных
+        subcutegories_names = [i.text.strip() for i in category.find_all('label', class_='radio-wrap')]
+        # ищу номер категорий в этих именах сабкатегорий
+        subcutegories_values = [i.find('input').get('value') for i in category.find_all('label', class_='radio-wrap')]
+        category_dict[name_of_category] = {value: sub_name for value, sub_name in zip(subcutegories_names, subcutegories_values)}
+    return category_dict
 if __name__ == '__main__':
     pyaterka()

@@ -1,4 +1,5 @@
 import importlib
+import importlib.util
 import sys
 from tkinter import *
 import json
@@ -9,12 +10,8 @@ from classes import CheckboxTreeview, MyJson
 from availability import *
 
 
-def impor(class_sales):
-    name = class_sales.bolder_shop
-    modulex = importlib.import_module(
-        f'shops.{name}')  # из названия папки магазина импортирую модуль
-    print(dir(modulex),f'shops.{name}' )
-    print(modulex.__loader__)
+
+
 
 
 
@@ -23,22 +20,25 @@ def impor(class_sales):
 class Sales:
     def __init__(self, bolder_shop):
         self.bolder_shop = bolder_shop
-        self.module = importlib.import_module(
-            f'shops.{self.bolder_shop}')  # из названия папки магазина импортирую модуль
+        #self.module = importlib.import_module(f'shops.{self.bolder_shop}\category')  # из названия папки магазина импортирую модуль
+        module = 'main1'
+        spec = importlib.util.spec_from_file_location(module, f'shops\{bolder_shop}' + "/main1.py")
+        main1 = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(main1)
+        self.get_all_category = main1.get_all_category
 
     # def r(self):
     #
-    #     a = self.module.category.get_all_category()
+    #     a = self.module.get_all_category()
     #     print(a)
-    #     # module = importlib.import_module(
-    #     #     f'shops.{self.bolder_shop}.main_magnit')
-    #     #module.magnit()
+        # module = importlib.import_module(
+        #     f'shops.{self.bolder_shop}.main_magnit')
+        #module.magnit()
 
     def get_json_category(self):
         my_choice = MyJson(self.bolder_shop, 'my_choice')  # получаю словарь с моим выбором из jsona
         my_choice_old = my_choice.read_my_choice()
-
-        dict_shop = self.module.category.get_all_category()  # получаю словарь со ВСЕМИ категориями , полученные с сайта
+        dict_shop = self.get_all_category()  # получаю словарь со ВСЕМИ категориями , полученные с сайта
         root = Tk()
         root.geometry('600x900')
         root.title('1313')  # имя магазина
@@ -98,7 +98,9 @@ class Sales:
 
 if __name__ == '__main__':
 
-    a = Sales('Магнит')
-    impor(a)
+    a = Sales('5Пяторочка')
+    a.get_json_category()
+
+
 
     #print(a.bolder_shop)

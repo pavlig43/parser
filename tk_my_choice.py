@@ -22,18 +22,14 @@ class Sales:
         self.bolder_shop = bolder_shop
         #self.module = importlib.import_module(f'shops.{self.bolder_shop}\category')  # из названия папки магазина импортирую модуль
         module = 'main1'
-        spec = importlib.util.spec_from_file_location(module, f'shops\{bolder_shop}' + "/main1.py")
+        spec = importlib.util.spec_from_file_location(module, rf'shops/{bolder_shop}' + "/main1.py")
         main1 = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(main1)
         self.get_all_category = main1.get_all_category
+        self.main = main1.main
+        self.get_lst_shops = main1.get_lst_shops
+        #self.get_cokie = main1.get_cokie
 
-    # def r(self):
-    #
-    #     a = self.module.get_all_category()
-    #     print(a)
-        # module = importlib.import_module(
-        #     f'shops.{self.bolder_shop}.main_magnit')
-        #module.magnit()
 
     def get_json_category(self):
         my_choice = MyJson(self.bolder_shop, 'my_choice')  # получаю словарь с моим выбором из jsona
@@ -75,8 +71,8 @@ class Sales:
                         my_choice_new[
                             tree.item(category)[
                                 'text']] = subcategories  # основной словарь дополняю словарем подкатегории
-            my_choice.write_my_choice(my_choice_new)
-
+            my_choice.write_my_choice(my_choice_new) # сохраняю в файл свой выбор
+            root.destroy()
         btn = Button(text="Получить мой список")
 
         btn.bind("<ButtonPress>", get_my_choice)  # событие при нажатии кнопки , получаю мой выбор
@@ -98,8 +94,10 @@ class Sales:
 
 if __name__ == '__main__':
 
-    a = Sales('5Пяторочка')
-    a.get_json_category()
+    a = Sales('5Пятерочка')
+    # x = a.main()
+    # for name, pd in x.items():
+    #     pd.to_excel('sf.xlsx', index=False)
 
 
 

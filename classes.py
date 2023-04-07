@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import time
 
 from ttkwidgets import CheckboxTreeview as Tree
 
@@ -15,7 +16,8 @@ class CheckboxTreeview(Tree):
         """Uncheck item and propagate the state change to ancestors and descendants."""
         self._uncheck_descendant(item)
         self._uncheck_ancestor(item)
-    
+
+
 class MyJson:
     filepath = ''
     def __init__(self, bolder_shop, name):

@@ -12,7 +12,7 @@ from classes import MyJson
 def main(): # в куки буду передавать город и магазин
     my_choice = MyJson('Магнит', 'my_choice')
     my_choice_json = my_choice.read_my_choice()
-    my_choice_json = '[]='.join([bit_url for key in my_choice_json for name,bit_url in my_choice_json[key].items()]) # получаю куски url для отбора
+    my_choice_json = '&category[]='.join([bit_url for key in my_choice_json for name,bit_url in my_choice_json[key].items()]) # получаю куски url для отбора
 
     names = []
     links = []
@@ -25,10 +25,8 @@ def main(): # в куки буду передавать город и магаз
     # ДОБАВИТЬ SESSION
 
 
-    main_page_text = get_bs4(url)  # получаю bs4 основного сайта
-
-
     page_number = 1
+    cookies = {'mg_geo_id': '1795'}
     data = {
         'page': f'{page_number}',
         'FILTER': 'true',
@@ -37,7 +35,7 @@ def main(): # в куки буду передавать город и магаз
     ua = UserAgent().random
     headers = {'User-Agent': ua}
     response = requests.session()
-    response = response.post(url, cookies={'mg_geo_id': '1795'},
+    response = response.post(url, cookies=cookies,
                              headers=headers, data=data)    # получаю bs4 сайта с выбранной категорией 1 страницы
     page = BeautifulSoup(response.text, "html.parser")
 
@@ -78,6 +76,7 @@ def main(): # в куки буду передавать город и магаз
 
 
     magnit_df = magnit_df.sort_values(by='Скидка', ascending=False)
+
     return {'Магнит': magnit_df}
 def get_all_category():
     url = 'https://magnit.ru/promo'

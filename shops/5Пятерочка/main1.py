@@ -1,6 +1,7 @@
 import json
 import os
 import re
+from tkinter import *
 
 import pandas as pd
 import requests
@@ -14,7 +15,7 @@ from classes import MyJson
 def get_lst_shops():  # обновлять раз в месяц
     file_path = os.path.join(os.path.dirname(__file__), 'lst_shops.json')
     with open(file_path, 'w') as file:
-        url = 'https://5ka.ru/api/v2/stores/?bbox=45.0,45.0,47.0,47.0'  # список всех магазинов
+        url = 'https://5ka.ru/api/v2/stores/?bbox=0.0,0.0,180.0,180.0'  # список всех магазинов
         response = requests.get(url)
         lst_shops = response.text[9:-2]
         file.write(lst_shops)
@@ -29,9 +30,9 @@ def get_lst_shops():  # обновлять раз в месяц
             city_name = item['properties']['city_name']
             address = item['properties']['address']
             shop_code = item['sap_code']
-            if f'{id}%{city_name}' not in dict_cookie:
-                dict_cookie[f'{id}%{city_name}'] = []
-            dict_cookie[f'{id}%{city_name}'].append({'address': address, 'shop_code': shop_code})
+            if f'{city_name}' not in dict_cookie:
+                dict_cookie[f'{city_name}'] = []
+            dict_cookie[f'{city_name}'].append({'id':id,'address': address, 'shop_code': shop_code})
         dict_cookie = json.dumps(dict_cookie, ensure_ascii=False)
         file.seek(0)
         file_path = os.path.join(os.path.dirname(__file__), 'dict_cookie_all_shops.json')
@@ -44,12 +45,10 @@ def get_cokie():
     with open(file_path, 'r') as file:
         lst_shops = file.read()
         lst_shops = json.loads(lst_shops)
-    for i, (city, info) in enumerate(lst_shops.items()):
+    cities = list(lst_shops.keys())
 
 
-
-
-    # with open(file_path, 'r+') as file:
+    print(cities)
 
 
 def main():
@@ -99,5 +98,6 @@ def get_all_category():
 
 
 if __name__ == '__main__':
-    get_lst_shops()
-    # get_cokie()
+
+
+    get_cokie()

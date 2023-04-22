@@ -1,6 +1,7 @@
 import json
 import os
 import re
+
 from tkinter import *
 
 import pandas as pd
@@ -10,6 +11,7 @@ from fake_useragent import UserAgent
 
 from availability import availability, get_bs4
 from classes import MyJson
+from module_for_tk import *
 
 
 def get_lst_shops():  # обновлять раз в месяц
@@ -32,7 +34,7 @@ def get_lst_shops():  # обновлять раз в месяц
             shop_code = item['sap_code']
             if f'{city_name}' not in dict_cookie:
                 dict_cookie[f'{city_name}'] = []
-            dict_cookie[f'{city_name}'].append({'id':id,'address': address, 'shop_code': shop_code})
+            dict_cookie[f'{city_name}'].append({'id': id, 'address': address, 'shop_code': shop_code})
         dict_cookie = json.dumps(dict_cookie, ensure_ascii=False)
         file.seek(0)
         file_path = os.path.join(os.path.dirname(__file__), 'dict_cookie_all_shops.json')
@@ -40,15 +42,13 @@ def get_lst_shops():  # обновлять раз в месяц
             f.write(dict_cookie)
 
 
-def get_cokie():
+def get_all_cities():
     file_path = os.path.join(os.path.dirname(__file__), 'dict_cookie_all_shops.json')
     with open(file_path, 'r') as file:
         lst_shops = file.read()
         lst_shops = json.loads(lst_shops)
     cities = list(lst_shops.keys())
-
-
-    print(cities)
+    return cities
 
 
 def main():
@@ -99,5 +99,9 @@ def get_all_category():
 
 if __name__ == '__main__':
 
+    root = Tk()
+    cities = get_all_cities()
+    options = (root, cities,'5Пятерочка')
+    btn = Button(root, text='Выбрать город', command=lambda: (city_listbox(*options),)).pack()
 
-    get_cokie()
+    root.mainloop()

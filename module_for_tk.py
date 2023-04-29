@@ -5,19 +5,20 @@ from tkinter import *
 import json
 from tkinter import ttk
 import os
+from tkinter.ttk import Combobox
 
 from classes import CheckboxTreeview, MyJson
 from availability import *
 
 
-def get_json_category(bolder_shop, dict_shop):
+def get_json_category(root1,bolder_shop, dict_shop):
     my_choice = MyJson(bolder_shop, 'my_choice')  # получаю словарь с моим выбором из jsona
     my_choice_old = my_choice.read_my_choice()
-    root1 = Toplevel(root)
-    root1.geometry('600x900')
-    root1.title(f'{bolder_shop}')  # имя магазина
-    tree = CheckboxTreeview(root1, columns='value')
-    vert_scroll = ttk.Scrollbar(root1, orient='vertical', command=tree.yview)  # ползунок вертикальный
+    root_choice = Toplevel(root1)
+    root_choice.geometry('600x900')
+    root_choice.title(f'{bolder_shop}')  # имя магазина
+    tree = CheckboxTreeview(root_choice, columns='value')
+    vert_scroll = ttk.Scrollbar(root_choice, orient='vertical', command=tree.yview)  # ползунок вертикальный
     vert_scroll.pack(side='right', fill='y')
     tree.configure(height=40, yscrollcommand=vert_scroll.set)
 
@@ -32,7 +33,7 @@ def get_json_category(bolder_shop, dict_shop):
                 else:
                     tree.item_uncheck(id2)
 
-    def get_my_choice(event):
+    def get_my_choice():
         # функция при нажатии кнопки получить остатки
         # собирает все галочки и делает словарь и обновляет json с моим выбором
         my_choice_new = {}
@@ -50,13 +51,12 @@ def get_json_category(bolder_shop, dict_shop):
                         tree.item(category)[
                             'text']] = subcategories  # основной словарь дополняю словарем подкатегории
         my_choice.write_my_choice(my_choice_new)  # сохраняю в файл свой выбор
-        root1.destroy()
+        root_choice.destroy()
 
-    btn = Button(root1, text="Получить мой список")
+    btn = Button(root_choice, text="Получить мой список",command=get_my_choice)
 
-    btn.bind(root1, "<ButtonPress>", get_my_choice)  # событие при нажатии кнопки , получаю мой выбор
     checkbutton_var = BooleanVar()  # создаю логическую переменую и привязываю ее к Checkbutton ниже
-    Checkbutton(root1, text='Снять/выбрать всё', variable=checkbutton_var).pack(anchor='e')
+    Checkbutton(root_choice, text='Снять/выбрать всё', variable=checkbutton_var).pack(anchor='e')
 
     def checked_all():  # функция,которая проверяет состояние Checkbutton
         for id in tree.get_children():  # и ставит или снимает галочки везде
@@ -70,7 +70,7 @@ def get_json_category(bolder_shop, dict_shop):
     btn.pack(anchor='w')
 
 
-def city_listbox(root1, cities1,bolder_shop):
+def city_listbox(root1, cities1,all_cities,bolder_shop):
     cookie_file =MyJson(bolder_shop,'cookie')
 
     root_city = Toplevel(root1)
@@ -103,7 +103,12 @@ def city_listbox(root1, cities1,bolder_shop):
             cookie[city] = None
         cookie = {city:cookie[city]}
         cookie_file.write_my_choice(cookie)
-        root_city.destroy()
+        try:
+            combobox_shop(root1, all_cities, bolder_shop)
+        except:
+            root_city.destroy()
+        finally:
+            root_city.destroy()
 
     # Создаем виджеты Entry и Listbox
     city_entry = Entry(root_city, background='#999999')
@@ -121,24 +126,46 @@ def city_listbox(root1, cities1,bolder_shop):
     city_listbox.pack(side=TOP)
 
 
-def get_city():
+def combobox_shop(root1,all_cities,  bolder_shop):
+    #функция создает выпадающий список из магазинов и сохраненяет
+    #параметры куки в файл для дальнейшего использования
+    cookie_file = MyJson(bolder_shop, 'cookie')
+    cookie = cookie_file.read_my_choice()
+
     try:
-        with open('city.txt') as f:
-            city = f.read()
+        city = list(cookie.keys())[0]
     except:
-        city = 'Москва'
+        city='Москва'
+    cookie_shops = [i['address'] for i in all_cities[city]]
 
-    return city
 
+    root_shop = Toplevel(root1)
+    root_shop.title("Выбери магазин")
+
+    def get_shop(event):
+        selections = shop_combobox.get()
+        index_shop = cookie_shops.index(selections)
+        shop = all_cities[city][index_shop]
+        cookie[city] = shop
+        cookie_file.write_my_choice(cookie)
+        root_shop.destroy()
+
+
+    shop_combobox = Combobox(root_shop, values=cookie_shops, width=50)
+    shop_combobox.bind('<<ComboboxSelected>>',get_shop)
+
+    shop_combobox.pack()
 
 if __name__ == '__main__':
-    # cities = ['a', 'b', 'c', 'd', 'e', 'f']
-    #
-    # root = Tk()
-    # btn = Button(root, text='21', command=lambda: city_listbox(root, cities))
-    # btn.pack()
-    #
-    # print(get_city())
-    # root.mainloop()
 
-    os.system(r'C:\Users\user\PycharmProjects\parser\shops\5Пятерочка\main1.py')
+    dic = {"г.Новочебоксарск":[{"id": 13272, "address": "ст-ца Выселки, ул. Советская, 4", "shop_code": "35V5"}, {"id": 13272, "address": "ст-ца Выселки, ул. Ткаченко, 52", "shop_code": "S375"}, {"id": 13272, "address": "ст-ца Выселки, пер. Калинина", "shop_code": "34GU"}, {"id": 13272, "address": "ст-ца Выселки, ул. Лунева, 29К", "shop_code": "Q855"}]}
+
+
+
+    root = Tk()
+    btn = Button(root, text='21', command=lambda: combobox_shop(root,dic,'5Пятерочка'))
+    btn.pack()
+
+    root.mainloop()
+
+    #os.system(r'C:\Users\user\PycharmProjects\parser\shops\5Пятерочка\main1.py')

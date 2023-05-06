@@ -158,6 +158,7 @@ def see_my_choice():
 
 
 if __name__ == '__main__':
+
     with open('all_category.json', 'r', encoding='utf-8') as f:
         all_category = f.read()
         all_category = json.loads(all_category)

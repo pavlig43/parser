@@ -1,4 +1,5 @@
 import re
+from datetime import datetime
 
 import pandas as pd
 import requests
@@ -10,6 +11,7 @@ from catalog import catalog
 
 
 def agrok():
+
     names = []
     links = []
     prices_sales = []

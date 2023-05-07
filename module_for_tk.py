@@ -112,7 +112,7 @@ def city_listbox(root1, cities1,all_cities,bolder_shop):
 
     # Создаем виджеты Entry и Listbox
     city_entry = Entry(root_city, background='#999999')
-    city_listbox = Listbox(root_city)
+    city_listbox = Listbox(root_city,width=50)
     btn = Button(root_city, text='Выбран', command=get_cookie)
 
     # Связываем ввод пользователя с обработчиком filter_cities
@@ -131,12 +131,21 @@ def combobox_shop(root1,all_cities,  bolder_shop):
     #параметры куки в файл для дальнейшего использования
     cookie_file = MyJson(bolder_shop, 'cookie')
     cookie = cookie_file.read_my_choice()
+    if bolder_shop == "Магнит":
+        try:
+            city = list(cookie.keys())[0]
+        except:
+            city = 'г.Москва, Москва'
+        cookie_shops = all_cities[city][1]#список вариантов мвгазинов мвгнит
 
-    try:
-        city = list(cookie.keys())[0]
-    except:
-        city='Москва'
-    cookie_shops = [i['address'] for i in all_cities[city]]
+
+
+    else:
+        try:
+            city = list(cookie.keys())[0]
+        except:
+            city='Москва'
+        cookie_shops = [i['address'] for i in all_cities[city]]
 
 
     root_shop = Toplevel(root1)
@@ -145,8 +154,11 @@ def combobox_shop(root1,all_cities,  bolder_shop):
     def get_shop(event):
         selections = shop_combobox.get()
         index_shop = cookie_shops.index(selections)
-        shop = all_cities[city][index_shop]
-        cookie[city] = shop
+        if bolder_shop == "Магнит":
+            cookie[city]= [all_cities[city][0],all_cities[city][1][index_shop]]
+        else:
+            shop = all_cities[city][index_shop]
+            cookie[city] = shop
         cookie_file.write_my_choice(cookie)
         root_shop.destroy()
 
